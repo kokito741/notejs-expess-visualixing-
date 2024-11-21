@@ -1,5 +1,44 @@
-extends layout
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title Device Monitoring
+    style.
+      body { font-family: Arial, sans-serif; }
+      table { width: 100%; border-collapse: collapse; }
+      th, td { padding: 8px 12px; border: 1px solid #ddd; }
+      th { background-color: #f4f4f4; }
+      canvas { width: 100%; height: 400px; }
+  body
+    h1 Device Monitoring
+    div
+      h2 Current Data
+      p
+        strong Temperature:
+        span#current-temperature 
+        |  °C
+      p
+        strong Humidity:
+        span#current-humidity 
+        |  %
+      p
+        strong Last Updated:
+        span#last-updated
+    table
+      thead
+        tr
+          th Device Name
+          th Device ID
+          th Status
+          th Last Seen
+          th Charging
+          th Location
+      tbody#device-table
+    h2 Temperature Over Time
+    canvas#temperature-chart
+    h2 Humidity Over Time
+    canvas#humidity-chart
 
-block content
-  h1= title
-  p Welcome to #{title}
+    script(src="https://cdn.jsdelivr.net/npm/chart.js")
+    script(src="/script.js")

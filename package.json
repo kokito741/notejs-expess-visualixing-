@@ -19,6 +19,11 @@
     "mersenne-twister": "^1.1.0",
     "morgan": "~1.9.1",
     "pug": "^2.0.4",
-    "uglify-js": "^2.6.0"
+    "uglify-js": "^2.6.0",
+    "dotenv": "^10.0.0",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5", 
+    "jsonwebtoken": "^8.5.1", 
+    "bcryptjs": "^2.4.3"
   }
 }

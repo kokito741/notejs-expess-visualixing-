@@ -10,6 +10,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.set('view engine', 'pug');
 
+// Routes
 const userRoutes = require('./routes/userRoutes');
 const deviceRoutes = require('./routes/deviceRoutes');
 
@@ -25,5 +26,16 @@ app.get('/login', (req, res) => {
   res.render('login');
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// Error handling middleware
+app.use((err, req, res, next) => {
+  res.status(err.status || 500);
+  res.render('error', {
+    message: err.message,
+    error: req.app.get('env') === 'development' ? err : {}
+  });
+});
+
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => console.log(`Server running on port ${PORT} 🚀`));
+
+module.exports = app;

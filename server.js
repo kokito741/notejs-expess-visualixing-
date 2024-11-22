@@ -10,12 +10,6 @@ app.use(cors());
 app.use(bodyParser.json());
 app.set('view engine', 'pug');
 
-// Routes
-const userRoutes = require('./routes/userRoutes');
-const deviceRoutes = require('./routes/deviceRoutes');
-
-app.use('/api/users', userRoutes);
-app.use('/api/devices', deviceRoutes);
 
 // Serve the login and index pages
 app.get('/', (req, res) => {
@@ -25,7 +19,10 @@ app.use((req, res, next) => { res.setHeader("Content-Security-Policy", "default-
 app.get('/login', (req, res) => {
   res.render('login');
 });
-
+app.get('/devices', async (req, res) => {
+  const devices = await fetchDevices(); 
+  res.json(devices);
+});
 // Error handling middleware
 app.use((err, req, res, next) => {
   res.status(err.status || 500);

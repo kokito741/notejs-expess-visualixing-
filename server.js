@@ -21,7 +21,7 @@ app.use('/api/devices', deviceRoutes);
 app.get('/', (req, res) => {
   res.render('index');
 });
-
+app.use((req, res, next) => { res.setHeader("Content-Security-Policy", "default-src 'self'; script-src 'self' https://web.kokito741.xyz"); next(); });
 app.get('/login', (req, res) => {
   res.render('login');
 });

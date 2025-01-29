@@ -53,7 +53,7 @@ function displayData(data) {
   fetchHistogramData('humidity', 'humidity-histogram', 'humidity-start-date', 'humidity-end-date');
 }
 
-function fetchHistogramData(type, histogramId, startDateId, endDateId) {
+function fetchHistogramData(type, canvasId, startDateId, endDateId) {
   const startDate = document.getElementById(startDateId)?.value;
   const endDate = document.getElementById(endDateId)?.value;
   if (!startDate || !endDate) {
@@ -63,50 +63,51 @@ function fetchHistogramData(type, histogramId, startDateId, endDateId) {
   fetch(`/histogram?type=${type}&start=${startDate}&end=${endDate}`)
     .then(response => response.json())
     .then(data => {
-      createOrUpdateHistogram(histogramId, data.labels, data.values);
+      createOrUpdateHistogram(canvasId, data.labels, data.values);
     })
     .catch(error => console.error('Error fetching histogram data:', error));
 }
 
-function createOrUpdateHistogram(histogramId, labels, data) {
-  const histogramContainer = document.getElementById(histogramId);
-  if (!histogramContainer) {
-    console.error(`Element with id ${histogramId} not found`);
+function createOrUpdateHistogram(canvasId, labels, data) {
+  const ctx = document.getElementById(canvasId)?.getContext('2d');
+  if (!ctx) {
+    console.error(`Canvas element with id ${canvasId} not found`);
     return;
   }
-  histogramContainer.innerHTML = ''; // Clear previous data
-
-  const maxValue = Math.max(...data);
-  const containerWidth = histogramContainer.clientWidth;
-  const containerHeight = histogramContainer.clientHeight;
-
-  labels.forEach((label, index) => {
-    const point = document.createElement('div');
-    point.className = 'point';
-    point.style.left = `${(index / (labels.length - 1)) * containerWidth}px`;
-    point.style.bottom = `${(data[index] / maxValue) * containerHeight}px`;
-
-    const labelElement = document.createElement('div');
-    labelElement.className = 'chart-label';
-    labelElement.style.left = `${(index / (labels.length - 1)) * containerWidth}px`;
-    labelElement.style.bottom = '-20px';
-    labelElement.textContent = label;
-
-    histogramContainer.appendChild(point);
-    histogramContainer.appendChild(labelElement);
-
-    if (index > 0) {
-      const prevPoint = histogramContainer.querySelectorAll('.point')[index - 1];
-      const line = document.createElement('div');
-      line.className = 'line';
-      line.style.left = `${prevPoint.offsetLeft + prevPoint.clientWidth / 2}px`;
-      line.style.bottom = `${prevPoint.offsetTop + prevPoint.clientHeight / 2}px`;
-      line.style.width = `${point.offsetLeft - prevPoint.offsetLeft}px`;
-      line.style.transform = `rotate(${Math.atan2(point.offsetTop - prevPoint.offsetTop, point.offsetLeft - prevPoint.offsetLeft) * 180 / Math.PI}deg)`;
-
-      histogramContainer.appendChild(line);
-    }
-  });
+  if (window[canvasId]) {
+    window[canvasId].data.labels = labels;
+    window[canvasId].data.datasets[0].data = data;
+    window[canvasId].update();
+  } else {
+    window[canvasId] = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Value',
+          data: data,
+          borderColor: 'rgba(75, 192, 192, 1)',
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          fill: true,
+          tension: 0.1
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: {
+            type: 'time',
+            time: {
+              unit: 'hour'
+            }
+          },
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  }
 }
 
 // Functions to apply the selected date ranges

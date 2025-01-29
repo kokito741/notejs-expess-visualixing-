@@ -77,7 +77,6 @@ function createOrUpdateHistogram(canvasId, labels, data) {
     return;
   }
   if (window[canvasId]) {
-    
     window[canvasId] = new Chart(ctx, {
       type: 'line',
       data: {
@@ -106,7 +105,6 @@ function createOrUpdateHistogram(canvasId, labels, data) {
         }
       }
     });
-  
     window[canvasId].data.labels = labels;
     window[canvasId].data.datasets[0].data = data;
     window[canvasId].update();

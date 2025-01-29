@@ -62,7 +62,7 @@ app.get('/data', (req, res) => {
     return res.status(401).send('Unauthorized');
   }
   const query = `
-   SELECT dl.device_name, dl.device_location, dl.device_battery, ds.temperature, ds.humidity, ds.data_taken
+   SELECT dl.device_name, dl.device_location, dl.device_battery, ds.temp, ds.humanity, ds.data_taken
     FROM \`device-sensors\` ds
     JOIN \`devise-list\` dl ON ds.device_id = dl.device_id
     WHERE dl.user_id = ?

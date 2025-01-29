@@ -64,7 +64,7 @@ app.get('/data', (req, res) => {
   const query = `
    SELECT dl.device_name, dl.device_location, dl.device_battery, ds.temperature, ds.humidity, ds.data_taken
     FROM \`device-sensors\` ds
-    JOIN \`device-list\` dl ON ds.device_id = dl.device_id
+    JOIN \`devise-list\` dl ON ds.device_id = dl.device_id
     WHERE dl.user_id = ?
   `;
   connection.query(query, [req.session.userId], (err, results) => {

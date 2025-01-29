@@ -63,15 +63,17 @@ app.get('/data', (req, res) => {
   }
   const query = `
    SELECT dl.device_name, dl.device_location, dl.device_battery, ds.temp, ds.humanity, ds.data_taken
-    FROM \`device-sensors\` ds
-    JOIN \`devise-list\` dl ON ds.device_id = dl.device_id
+    FROM \`devise-list\` dl
+    JOIN (
+      SELECT ds1.*
+      FROM \`device-sensors\` ds1
+      JOIN (
+        SELECT device_id, MAX(data_taken) AS latest_data_taken
+        FROM \`device-sensors\`
+        GROUP BY device_id
+      ) ds2 ON ds1.device_id = ds2.device_id AND ds1.data_taken = ds2.latest_data_taken
+    ) ds ON dl.device_id = ds.device_id
     WHERE dl.user_id = ?
-    AND ds.data_taken = (
-      SELECT MAX(data_taken)
-      FROM \`device-sensors\`
-      WHERE device_id = ds.device_id
-    )
-    GROUP BY dl.device_id
   `;
   connection.query(query, [req.session.userId], (err, results) => {
     if (err) throw err;

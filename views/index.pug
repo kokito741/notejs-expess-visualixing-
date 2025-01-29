@@ -25,20 +25,5 @@ html(lang="en")
       p
         strong Last Updated:
         span#last-updated
-    table
-      thead
-        tr
-          th Device Name
-          th Device ID
-          th Status
-          th Last Seen
-          th Charging
-          th Location
-      tbody#device-table
-    h2 Temperature Over Time
-    canvas#temperature-chart
-    h2 Humidity Over Time
-    canvas#humidity-chart
-
-    script(src="https://cdn.jsdelivr.net/npm/chart.js")
+    div#data-container
     script(src="/script.js")

@@ -1,74 +1,84 @@
-async function fetchDevices() {
-  const response = await fetch('/devices'); // Fetch devices from the new server endpoint
-  if (!response.ok) {
-    console.error('Failed to fetch devices:', response.status);
-    return;
-  }
+fetch('/data')
+  .then(response => response.json())
+  .then(data => {
+    console.log(data);
+    // Call a function to display the data
+    displayData(data);
+  })
+  .catch(error => console.error('Error fetching data:', error));
 
-  const devices = await response.json();
-  const table = document.getElementById('device-table');
+function displayData(data) {
+  const dataContainer = document.getElementById('data-container');
   const currentTemp = document.getElementById('current-temperature');
   const currentHumidity = document.getElementById('current-humidity');
   const lastUpdated = document.getElementById('last-updated');
-  const tempChartCtx = document.getElementById('temperature-chart').getContext('2d');
-  const humidityChartCtx = document.getElementById('humidity-chart').getContext('2d');
+  dataContainer.innerHTML = ''; // Clear previous data
 
+  const labels = [];
   const temperatureData = [];
   const humidityData = [];
-  const labels = [];
 
-  devices.forEach(device => {
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td>${device.deviceName}</td>
-      <td>${device.deviceId}</td>
-      <td>${device.deviceStatus}</td>
-      <td>${new Date(device.deviceLastSeen).toLocaleString()}</td>
-      <td>${device.deviceCharging ? 'Yes' : 'No'}</td>
-      <td>${device.deviceLocation}</td>
-      <td>${device.deviceBattery} %</td> <!-- Display deviceBattery -->
+  data.forEach(device => {
+    const div = document.createElement('div');
+    div.innerHTML = `
+      <h3>Device: ${device.device_name}</h3>
+      <p>Location: ${device.device_location}</p>
+      <p>Battery: ${device.device_battery} %</p>
+      <p>Temperature: ${device.temperature} °C</p>
+      <p>Humidity: ${device.humidity} %</p>
+      <p>Data Taken: ${device.data_taken}</p>
     `;
-    table.appendChild(row);
+    dataContainer.appendChild(div);
 
-    // Assuming the device with the latest deviceLastSeen is the one we show as current
-    if (!lastUpdated.textContent || new Date(device.deviceLastSeen) > new Date(lastUpdated.textContent)) {
+    // Assuming the device with the latest data_taken is the one we show as current
+    if (!lastUpdated.textContent || new Date(device.data_taken) > new Date(lastUpdated.textContent)) {
       currentTemp.textContent = device.temperature;
       currentHumidity.textContent = device.humidity;
-      lastUpdated.textContent = new Date(device.deviceLastSeen).toLocaleString();
+      lastUpdated.textContent = new Date(device.data_taken).toLocaleString();
     }
 
-    labels.push(new Date(device.deviceLastSeen).toLocaleTimeString());
+    labels.push(new Date(device.data_taken).toLocaleTimeString());
     temperatureData.push(device.temperature);
     humidityData.push(device.humidity);
   });
 
-  const tempChart = new Chart(tempChartCtx, {
-    type: 'line',
-    data: {
-      labels: labels,
-      datasets: [{
-        label: 'Temperature',
-        data: temperatureData,
-        borderColor: 'rgba(255, 99, 132, 1)',
-        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-        fill: false,
-      }]
-    }
-  });
+  // Create or update charts
+  createOrUpdateChart('temperature-chart', 'Temperature', labels, temperatureData, 'rgba(255, 99, 132, 1)', 'rgba(255, 99, 132, 0.2)');
+  createOrUpdateChart('humidity-chart', 'Humidity', labels, humidityData, 'rgba(54, 162, 235, 1)', 'rgba(54, 162, 235, 0.2)');
+}
 
-  const humidityChart = new Chart(humidityChartCtx, {
-    type: 'line',
-    data: {
-      labels: labels,
-      datasets: [{
-        label: 'Humidity',
-        data: humidityData,
-        borderColor: 'rgba(54, 162, 235, 1)',
-        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-        fill: false,
-      }]
-    }
-  });
+function createOrUpdateChart(canvasId, label, labels, data, borderColor, backgroundColor) {
+  const ctx = document.getElementById(canvasId).getContext('2d');
+  if (window[canvasId]) {
+    window[canvasId].data.labels = labels;
+    window[canvasId].data.datasets[0].data = data;
+    window[canvasId].update();
+  } else {
+    window[canvasId] = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: label,
+          data: data,
+          borderColor: borderColor,
+          backgroundColor: backgroundColor,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: {
+            type: 'time',
+            time: {
+              unit: 'minute'
+            }
+          }
+        }
+      }
+    });
+  }
 }
 
 // Call the function when the page loads

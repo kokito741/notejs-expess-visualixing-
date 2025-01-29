@@ -66,6 +66,12 @@ app.get('/data', (req, res) => {
     FROM \`device-sensors\` ds
     JOIN \`devise-list\` dl ON ds.device_id = dl.device_id
     WHERE dl.user_id = ?
+    AND ds.data_taken = (
+      SELECT MAX(data_taken)
+      FROM \`device-sensors\`
+      WHERE device_id = ds.device_id
+    )
+    GROUP BY dl.device_id
   `;
   connection.query(query, [req.session.userId], (err, results) => {
     if (err) throw err;

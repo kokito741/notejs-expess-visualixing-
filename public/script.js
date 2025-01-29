@@ -1,11 +1,13 @@
-fetch('/data')
-  .then(response => response.json())
-  .then(data => {
-    console.log(data);
-    // Call a function to display the data
-    displayData(data);
-  })
-  .catch(error => console.error('Error fetching data:', error));
+function fetchDevices() {
+  fetch('/data')
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);
+      // Call a function to display the data
+      displayData(data);
+    })
+    .catch(error => console.error('Error fetching data:', error));
+}
 
 function displayData(data) {
   const dataContainer = document.getElementById('data-container');
@@ -24,22 +26,22 @@ function displayData(data) {
       <h3>Device: ${device.device_name}</h3>
       <p>Location: ${device.device_location}</p>
       <p>Battery: ${device.device_battery} %</p>
-      <p>Temperature: ${device.temperature} °C</p>
-      <p>Humidity: ${device.humidity} %</p>
+      <p>Temperature: ${device.temp} °C</p>
+      <p>Humidity: ${device.humanity} %</p>
       <p>Data Taken: ${device.data_taken}</p>
     `;
     dataContainer.appendChild(div);
 
     // Assuming the device with the latest data_taken is the one we show as current
     if (!lastUpdated.textContent || new Date(device.data_taken) > new Date(lastUpdated.textContent)) {
-      currentTemp.textContent = device.temperature;
-      currentHumidity.textContent = device.humidity;
+      currentTemp.textContent = device.temp;
+      currentHumidity.textContent = device.humanity;
       lastUpdated.textContent = new Date(device.data_taken).toLocaleString();
     }
 
     labels.push(new Date(device.data_taken).toLocaleTimeString());
-    temperatureData.push(device.temperature);
-    humidityData.push(device.humidity);
+    temperatureData.push(device.temp);
+    humidityData.push(device.humanity);
   });
 
   // Create or update charts

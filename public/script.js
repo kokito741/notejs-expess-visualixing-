@@ -48,54 +48,12 @@ function displayData(data) {
     humidityData.push(device.humanity);
   });
 
-  // Create or update charts
-  createOrUpdateChart('temperature-chart', 'Temperature', labels, temperatureData, 'rgba(255, 99, 132, 1)', 'rgba(255, 99, 132, 0.2)');
-  createOrUpdateChart('humidity-chart', 'Humidity', labels, humidityData, 'rgba(54, 162, 235, 1)', 'rgba(54, 162, 235, 0.2)');
-
   // Fetch and display histogram data
   fetchHistogramData('temp', 'temp-histogram', 'temp-start-date', 'temp-end-date');
   fetchHistogramData('humidity', 'humidity-histogram', 'humidity-start-date', 'humidity-end-date');
 }
 
-function createOrUpdateChart(canvasId, label, labels, data, borderColor, backgroundColor) {
-  const ctx = document.getElementById(canvasId)?.getContext('2d');
-  if (!ctx) {
-    console.error(`Canvas element with id ${canvasId} not found`);
-    return;
-  }
-  if (window[canvasId]) {
-    window[canvasId].data.labels = labels;
-    window[canvasId].data.datasets[0].data = data;
-    window[canvasId].update();
-  } else {
-    window[canvasId] = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: labels,
-        datasets: [{
-          label: label,
-          data: data,
-          borderColor: borderColor,
-          backgroundColor: backgroundColor,
-          fill: true
-        }]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          x: {
-            type: 'time',
-            time: {
-              unit: 'minute'
-            }
-          }
-        }
-      }
-    });
-  }
-}
-
-function fetchHistogramData(type, canvasId, startDateId, endDateId) {
+function fetchHistogramData(type, histogramId, startDateId, endDateId) {
   const startDate = document.getElementById(startDateId)?.value;
   const endDate = document.getElementById(endDateId)?.value;
   if (!startDate || !endDate) {
@@ -105,50 +63,35 @@ function fetchHistogramData(type, canvasId, startDateId, endDateId) {
   fetch(`/histogram?type=${type}&start=${startDate}&end=${endDate}`)
     .then(response => response.json())
     .then(data => {
-      createOrUpdateHistogram(canvasId, data.labels, data.values);
+      createOrUpdateHistogram(histogramId, data.labels, data.values);
     })
     .catch(error => console.error('Error fetching histogram data:', error));
 }
 
-function createOrUpdateHistogram(canvasId, labels, data) {
-  const ctx = document.getElementById(canvasId)?.getContext('2d');
-  if (!ctx) {
-    console.error(`Canvas element with id ${canvasId} not found`);
+function createOrUpdateHistogram(histogramId, labels, data) {
+  const histogramContainer = document.getElementById(histogramId);
+  if (!histogramContainer) {
+    console.error(`Element with id ${histogramId} not found`);
     return;
   }
-  if (window[canvasId]) {
-    window[canvasId].data.labels = labels;
-    window[canvasId].data.datasets[0].data = data;
-    window[canvasId].update();
-  } else {
-    window[canvasId] = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: labels,
-        datasets: [{
-          label: 'Frequency',
-          data: data,
-          backgroundColor: 'rgba(75, 192, 192, 0.2)',
-          borderColor: 'rgba(75, 192, 192, 1)',
-          borderWidth: 1
-        }]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          x: {
-            type: 'time',
-            time: {
-              unit: 'hour'
-            }
-          },
-          y: {
-            beginAtZero: true
-          }
-        }
-      }
-    });
-  }
+  histogramContainer.innerHTML = ''; // Clear previous data
+
+  labels.forEach((label, index) => {
+    const barContainer = document.createElement('div');
+    barContainer.className = 'bar-container';
+
+    const barLabel = document.createElement('span');
+    barLabel.className = 'bar-label';
+    barLabel.textContent = label;
+
+    const bar = document.createElement('div');
+    bar.className = 'bar';
+    bar.style.width = `${data[index]}%`;
+
+    barContainer.appendChild(barLabel);
+    barContainer.appendChild(bar);
+    histogramContainer.appendChild(barContainer);
+  });
 }
 
 // Functions to apply the selected date ranges

@@ -9,7 +9,9 @@ html(lang="en")
       table { width: 100%; border-collapse: collapse; }
       th, td { padding: 8px 12px; border: 1px solid #ddd; }
       th { background-color: #f4f4f4; }
-      canvas { width: 100%; height: 400px; }
+      .bar { height: 20px; background-color: #4CAF50; margin: 2px 0; }
+      .bar-container { display: flex; align-items: center; }
+      .bar-label { width: 100px; }
   body
     h1 Device Monitoring
     div
@@ -27,21 +29,15 @@ html(lang="en")
         span#last-updated
     div#data-container
     div
-      h2 Temperature Chart
-      canvas#temperature-chart
-    div
-      h2 Humidity Chart
-      canvas#humidity-chart
-    div
       h2 Temperature Histogram
       input(type="date" id="temp-start-date")
       input(type="date" id="temp-end-date")
       button(onclick="applyTempRange()") Apply Range
-      canvas#temp-histogram
+      div#temp-histogram
     div
       h2 Humidity Histogram
       input(type="date" id="humidity-start-date")
       input(type="date" id="humidity-end-date")
       button(onclick="applyHumidityRange()") Apply Range
-      canvas#humidity-histogram
+      div#humidity-histogram
     script(src="/script.js")

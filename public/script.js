@@ -14,6 +14,10 @@ function displayData(data) {
   const currentTemp = document.getElementById('current-temperature');
   const currentHumidity = document.getElementById('current-humidity');
   const lastUpdated = document.getElementById('last-updated');
+  if (!dataContainer || !currentTemp || !currentHumidity || !lastUpdated) {
+    console.error('Required elements not found in the DOM');
+    return;
+  }
   dataContainer.innerHTML = ''; // Clear previous data
 
   const labels = [];
@@ -54,7 +58,11 @@ function displayData(data) {
 }
 
 function createOrUpdateChart(canvasId, label, labels, data, borderColor, backgroundColor) {
-  const ctx = document.getElementById(canvasId).getContext('2d');
+  const ctx = document.getElementById(canvasId)?.getContext('2d');
+  if (!ctx) {
+    console.error(`Canvas element with id ${canvasId} not found`);
+    return;
+  }
   if (window[canvasId]) {
     window[canvasId].data.labels = labels;
     window[canvasId].data.datasets[0].data = data;
@@ -88,8 +96,12 @@ function createOrUpdateChart(canvasId, label, labels, data, borderColor, backgro
 }
 
 function fetchHistogramData(type, canvasId, startDateId, endDateId) {
-  const startDate = document.getElementById(startDateId).value;
-  const endDate = document.getElementById(endDateId).value;
+  const startDate = document.getElementById(startDateId)?.value;
+  const endDate = document.getElementById(endDateId)?.value;
+  if (!startDate || !endDate) {
+    console.error('Start date or end date not selected');
+    return;
+  }
   fetch(`/histogram?type=${type}&start=${startDate}&end=${endDate}`)
     .then(response => response.json())
     .then(data => {
@@ -99,7 +111,11 @@ function fetchHistogramData(type, canvasId, startDateId, endDateId) {
 }
 
 function createOrUpdateHistogram(canvasId, labels, data) {
-  const ctx = document.getElementById(canvasId).getContext('2d');
+  const ctx = document.getElementById(canvasId)?.getContext('2d');
+  if (!ctx) {
+    console.error(`Canvas element with id ${canvasId} not found`);
+    return;
+  }
   if (window[canvasId]) {
     window[canvasId].data.labels = labels;
     window[canvasId].data.datasets[0].data = data;
@@ -135,11 +151,14 @@ function createOrUpdateHistogram(canvasId, labels, data) {
   }
 }
 
-// Add event listeners for date inputs
-document.getElementById('temp-start-date').addEventListener('change', () => fetchHistogramData('temp', 'temp-histogram', 'temp-start-date', 'temp-end-date'));
-document.getElementById('temp-end-date').addEventListener('change', () => fetchHistogramData('temp', 'temp-histogram', 'temp-start-date', 'temp-end-date'));
-document.getElementById('humidity-start-date').addEventListener('change', () => fetchHistogramData('humidity', 'humidity-histogram', 'humidity-start-date', 'humidity-end-date'));
-document.getElementById('humidity-end-date').addEventListener('change', () => fetchHistogramData('humidity', 'humidity-histogram', 'humidity-start-date', 'humidity-end-date'));
+// Functions to apply the selected date ranges
+function applyTempRange() {
+  fetchHistogramData('temp', 'temp-histogram', 'temp-start-date', 'temp-end-date');
+}
+
+function applyHumidityRange() {
+  fetchHistogramData('humidity', 'humidity-histogram', 'humidity-start-date', 'humidity-end-date');
+}
 
 // Call the function when the page loads
 window.onload = fetchDevices;

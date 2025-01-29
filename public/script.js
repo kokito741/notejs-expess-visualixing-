@@ -60,6 +60,7 @@ function fetchHistogramData(type, canvasId, startDateId, endDateId) {
     console.error('Start date or end date not selected');
     return;
   }
+  console.log(`Fetching histogram data for ${type} with canvasId: ${canvasId}`);
   fetch(`/histogram?type=${type}&start=${startDate}&end=${endDate}`)
     .then(response => response.json())
     .then(data => {
@@ -69,6 +70,7 @@ function fetchHistogramData(type, canvasId, startDateId, endDateId) {
 }
 
 function createOrUpdateHistogram(canvasId, labels, data) {
+  console.log(`Creating or updating histogram for canvasId: ${canvasId}`);
   const ctx = document.getElementById(canvasId)?.getContext('2d');
   if (!ctx) {
     console.error(`Canvas element with id ${canvasId} not found`);

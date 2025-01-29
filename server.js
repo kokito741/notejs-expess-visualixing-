@@ -56,7 +56,33 @@ app.post('/login', (req, res) => {
     }
   });
 });
-
+app.get('/histogram', (req, res) => {
+  if (!req.session.userId) {
+    return res.status(401).send('Unauthorized');
+  }
+  const { type, range } = req.query;
+  const column = type === 'temp' ? 'temp' : 'humanity';
+  const query = `
+    SELECT ${column} AS value, COUNT(*) AS frequency
+    FROM \`device-sensors\`
+    WHERE device_id IN (
+      SELECT device_id
+      FROM \`devise-list\`
+      WHERE user_id = ?
+    )
+    AND ${column} BETWEEN ? AND ?
+    GROUP BY ${column}
+    ORDER BY ${column}
+  `;
+  const min = range - 10;
+  const max = range + 10;
+  connection.query(query, [req.session.userId, min, max], (err, results) => {
+    if (err) throw err;
+    const labels = results.map(row => row.value);
+    const values = results.map(row => row.frequency);
+    res.json({ labels, values });
+  });
+});
 app.get('/data', (req, res) => {
   if (!req.session.userId) {
     return res.status(401).send('Unauthorized');

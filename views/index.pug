@@ -1,4 +1,4 @@
-doctype html
+octype html
 html(lang="en")
   head
     meta(charset="UTF-8")
@@ -26,4 +26,12 @@ html(lang="en")
         strong Last Updated:
         span#last-updated
     div#data-container
-    script(src="/script.js")
+    div
+      h2 Temperature Histogram
+      input(type="range" id="temp-range" min="0" max="100" value="50")
+      canvas#temp-histogram
+    div
+      h2 Humidity Histogram
+      input(type="range" id="humidity-range" min="0" max="100" value="50")
+      canvas#humidity-histogram
+    script(src="/script.js

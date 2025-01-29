@@ -47,6 +47,10 @@ function displayData(data) {
   // Create or update charts
   createOrUpdateChart('temperature-chart', 'Temperature', labels, temperatureData, 'rgba(255, 99, 132, 1)', 'rgba(255, 99, 132, 0.2)');
   createOrUpdateChart('humidity-chart', 'Humidity', labels, humidityData, 'rgba(54, 162, 235, 1)', 'rgba(54, 162, 235, 0.2)');
+
+  // Fetch and display histogram data
+  fetchHistogramData('temp', 'temp-histogram', 'temp-range');
+  fetchHistogramData('humidity', 'humidity-histogram', 'humidity-range');
 }
 
 function createOrUpdateChart(canvasId, label, labels, data, borderColor, backgroundColor) {
@@ -82,6 +86,54 @@ function createOrUpdateChart(canvasId, label, labels, data, borderColor, backgro
     });
   }
 }
+
+function fetchHistogramData(type, canvasId, rangeId) {
+  const range = document.getElementById(rangeId).value;
+  fetch(`/histogram?type=${type}&range=${range}`)
+    .then(response => response.json())
+    .then(data => {
+      createOrUpdateHistogram(canvasId, data.labels, data.values);
+    })
+    .catch(error => console.error('Error fetching histogram data:', error));
+}
+
+function createOrUpdateHistogram(canvasId, labels, data) {
+  const ctx = document.getElementById(canvasId).getContext('2d');
+  if (window[canvasId]) {
+    window[canvasId].data.labels = labels;
+    window[canvasId].data.datasets[0].data = data;
+    window[canvasId].update();
+  } else {
+    window[canvasId] = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Frequency',
+          data: data,
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: {
+            beginAtZero: true
+          },
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  }
+}
+
+// Add event listeners for range inputs
+document.getElementById('temp-range').addEventListener('input', () => fetchHistogramData('temp', 'temp-histogram', 'temp-range'));
+document.getElementById('humidity-range').addEventListener('input', () => fetchHistogramData('humidity', 'humidity-histogram', 'humidity-range'));
 
 // Call the function when the page loads
 window.onload = fetchDevices;

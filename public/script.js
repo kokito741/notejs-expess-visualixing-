@@ -77,6 +77,36 @@ function createOrUpdateHistogram(canvasId, labels, data) {
     return;
   }
   if (window[canvasId]) {
+    
+    window[canvasId] = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Value',
+          data: data,
+          borderColor: 'rgba(75, 192, 192, 1)',
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          fill: true,
+          tension: 0.1
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: {
+            type: 'time',
+            time: {
+              unit: 'hour'
+            }
+          },
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  
     window[canvasId].data.labels = labels;
     window[canvasId].data.datasets[0].data = data;
     window[canvasId].update();

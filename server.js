@@ -42,7 +42,7 @@ app.get('/login', (req, res) => {
 
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
-  const query = 'SELECT user_id, username FROM users WHERE email = ? AND password = ?';
+  const query = 'SELECT user_id, username FROM user WHERE email = ? AND password = ?';
   connection.query(query, [email, password], (err, results) => {
     if (err) throw err;
     if (results.length > 0) {

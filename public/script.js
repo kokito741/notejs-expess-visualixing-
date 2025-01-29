@@ -76,21 +76,36 @@ function createOrUpdateHistogram(histogramId, labels, data) {
   }
   histogramContainer.innerHTML = ''; // Clear previous data
 
+  const maxValue = Math.max(...data);
+  const containerWidth = histogramContainer.clientWidth;
+  const containerHeight = histogramContainer.clientHeight;
+
   labels.forEach((label, index) => {
-    const barContainer = document.createElement('div');
-    barContainer.className = 'bar-container';
+    const point = document.createElement('div');
+    point.className = 'point';
+    point.style.left = `${(index / (labels.length - 1)) * containerWidth}px`;
+    point.style.bottom = `${(data[index] / maxValue) * containerHeight}px`;
 
-    const barLabel = document.createElement('span');
-    barLabel.className = 'bar-label';
-    barLabel.textContent = label;
+    const labelElement = document.createElement('div');
+    labelElement.className = 'chart-label';
+    labelElement.style.left = `${(index / (labels.length - 1)) * containerWidth}px`;
+    labelElement.style.bottom = '-20px';
+    labelElement.textContent = label;
 
-    const bar = document.createElement('div');
-    bar.className = 'bar';
-    bar.style.width = `${data[index]}%`;
+    histogramContainer.appendChild(point);
+    histogramContainer.appendChild(labelElement);
 
-    barContainer.appendChild(barLabel);
-    barContainer.appendChild(bar);
-    histogramContainer.appendChild(barContainer);
+    if (index > 0) {
+      const prevPoint = histogramContainer.querySelectorAll('.point')[index - 1];
+      const line = document.createElement('div');
+      line.className = 'line';
+      line.style.left = `${prevPoint.offsetLeft + prevPoint.clientWidth / 2}px`;
+      line.style.bottom = `${prevPoint.offsetTop + prevPoint.clientHeight / 2}px`;
+      line.style.width = `${point.offsetLeft - prevPoint.offsetLeft}px`;
+      line.style.transform = `rotate(${Math.atan2(point.offsetTop - prevPoint.offsetTop, point.offsetLeft - prevPoint.offsetLeft) * 180 / Math.PI}deg)`;
+
+      histogramContainer.appendChild(line);
+    }
   });
 }
 

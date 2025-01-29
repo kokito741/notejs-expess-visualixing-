@@ -9,9 +9,10 @@ html(lang="en")
       table { width: 100%; border-collapse: collapse; }
       th, td { padding: 8px 12px; border: 1px solid #ddd; }
       th { background-color: #f4f4f4; }
-      .bar { height: 20px; background-color: #4CAF50; margin: 2px 0; }
-      .bar-container { display: flex; align-items: center; }
-      .bar-label { width: 100px; }
+      .point { width: 10px; height: 10px; background-color: #4CAF50; border-radius: 50%; position: absolute; }
+      .line { height: 2px; background-color: #4CAF50; position: absolute; }
+      .chart-container { position: relative; height: 200px; }
+      .chart-label { position: absolute; left: 0; }
   body
     h1 Device Monitoring
     div
@@ -33,11 +34,11 @@ html(lang="en")
       input(type="date" id="temp-start-date")
       input(type="date" id="temp-end-date")
       button(onclick="applyTempRange()") Apply Range
-      div#temp-histogram
+      div#temp-histogram.chart-container
     div
       h2 Humidity Histogram
       input(type="date" id="humidity-start-date")
       input(type="date" id="humidity-end-date")
       button(onclick="applyHumidityRange()") Apply Range
-      div#humidity-histogram
+      div#humidity-histogram.chart-container
     script(src="/script.js")

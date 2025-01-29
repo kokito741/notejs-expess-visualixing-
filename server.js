@@ -1,4 +1,3 @@
-
 const express = require('express');
 const bodyParser = require('body-parser');
 const mysql = require('mysql');
@@ -17,10 +16,10 @@ app.use(session({
 app.set('view engine', 'pug');
 
 const connection = mysql.createConnection({
-  host: 'https://database.kokito741.xyz',
-  user: 'website',
-  password: 'Afd3zi&aM4v7GX,',
-  database: 'sensor-data'
+  host: 'localhost',
+  user: 'yourUsername',
+  password: 'yourPassword',
+  database: 'yourDatabase'
 });
 
 connection.connect((err) => {
@@ -81,6 +80,4 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(3000, () => {
-  console.log('Server is running on port 3000');
-});
+module.exports = app;

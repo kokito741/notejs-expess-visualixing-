@@ -16,10 +16,10 @@ app.use(session({
 app.set('view engine', 'pug');
 
 const connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'yourUsername',
-  password: 'yourPassword',
-  database: 'yourDatabase'
+  host: 'database.kokito741.xyz',
+  user: 'website',
+  password: 'Afd3zi&aM4v7GX,',
+  database: 'sensor-data'
 });
 
 connection.connect((err) => {

@@ -56,6 +56,7 @@ app.post('/login', (req, res) => {
     }
   });
 });
+
 app.get('/histogram', (req, res) => {
   if (!req.session.userId) {
     return res.status(401).send('Unauthorized');
@@ -83,12 +84,13 @@ app.get('/histogram', (req, res) => {
     res.json({ labels, values });
   });
 });
+
 app.get('/data', (req, res) => {
   if (!req.session.userId) {
     return res.status(401).send('Unauthorized');
   }
   const query = `
-   SELECT dl.device_name, dl.device_location, dl.device_battery, ds.temp, ds.humanity, ds.data_taken
+    SELECT dl.device_name, dl.device_location, dl.device_battery, ds.temp, ds.humanity, ds.data_taken
     FROM \`devise-list\` dl
     JOIN (
       SELECT ds1.*
@@ -116,4 +118,6 @@ app.use((err, req, res, next) => {
   });
 });
 
-module.exports = app;
+app.listen(3000, () => {
+  console.log('Server is running on port 3000');
+});

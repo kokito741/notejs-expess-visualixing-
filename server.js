@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const mysql = require('mysql');
 const session = require('express-session');
 const cors = require('cors');
+const path = require('path');
 const app = express();
 
 app.use(cors());
@@ -14,6 +15,7 @@ app.use(session({
   saveUninitialized: true
 }));
 app.set('view engine', 'pug');
+app.use(express.static(path.join(__dirname, 'public')));
 
 const connection = mysql.createConnection({
   host: 'database.kokito741.xyz',

@@ -1,4 +1,4 @@
-octype html
+doctype html
 html(lang="en")
   head
     meta(charset="UTF-8")
@@ -28,10 +28,12 @@ html(lang="en")
     div#data-container
     div
       h2 Temperature Histogram
-      input(type="range" id="temp-range" min="0" max="100" value="50")
+      input(type="date" id="temp-start-date")
+      input(type="date" id="temp-end-date")
       canvas#temp-histogram
     div
       h2 Humidity Histogram
-      input(type="range" id="humidity-range" min="0" max="100" value="50")
+      input(type="date" id="humidity-start-date")
+      input(type="date" id="humidity-end-date")
       canvas#humidity-histogram
     script(src="/script.js")

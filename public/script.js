@@ -49,8 +49,8 @@ function displayData(data) {
   createOrUpdateChart('humidity-chart', 'Humidity', labels, humidityData, 'rgba(54, 162, 235, 1)', 'rgba(54, 162, 235, 0.2)');
 
   // Fetch and display histogram data
-  fetchHistogramData('temp', 'temp-histogram', 'temp-range');
-  fetchHistogramData('humidity', 'humidity-histogram', 'humidity-range');
+  fetchHistogramData('temp', 'temp-histogram', 'temp-start-date', 'temp-end-date');
+  fetchHistogramData('humidity', 'humidity-histogram', 'humidity-start-date', 'humidity-end-date');
 }
 
 function createOrUpdateChart(canvasId, label, labels, data, borderColor, backgroundColor) {
@@ -87,9 +87,10 @@ function createOrUpdateChart(canvasId, label, labels, data, borderColor, backgro
   }
 }
 
-function fetchHistogramData(type, canvasId, rangeId) {
-  const range = document.getElementById(rangeId).value;
-  fetch(`/histogram?type=${type}&range=${range}`)
+function fetchHistogramData(type, canvasId, startDateId, endDateId) {
+  const startDate = document.getElementById(startDateId).value;
+  const endDate = document.getElementById(endDateId).value;
+  fetch(`/histogram?type=${type}&start=${startDate}&end=${endDate}`)
     .then(response => response.json())
     .then(data => {
       createOrUpdateHistogram(canvasId, data.labels, data.values);
@@ -120,7 +121,10 @@ function createOrUpdateHistogram(canvasId, labels, data) {
         responsive: true,
         scales: {
           x: {
-            beginAtZero: true
+            type: 'time',
+            time: {
+              unit: 'hour'
+            }
           },
           y: {
             beginAtZero: true
@@ -131,9 +135,11 @@ function createOrUpdateHistogram(canvasId, labels, data) {
   }
 }
 
-// Add event listeners for range inputs
-document.getElementById('temp-range').addEventListener('input', () => fetchHistogramData('temp', 'temp-histogram', 'temp-range'));
-document.getElementById('humidity-range').addEventListener('input', () => fetchHistogramData('humidity', 'humidity-histogram', 'humidity-range'));
+// Add event listeners for date inputs
+document.getElementById('temp-start-date').addEventListener('change', () => fetchHistogramData('temp', 'temp-histogram', 'temp-start-date', 'temp-end-date'));
+document.getElementById('temp-end-date').addEventListener('change', () => fetchHistogramData('temp', 'temp-histogram', 'temp-start-date', 'temp-end-date'));
+document.getElementById('humidity-start-date').addEventListener('change', () => fetchHistogramData('humidity', 'humidity-histogram', 'humidity-start-date', 'humidity-end-date'));
+document.getElementById('humidity-end-date').addEventListener('change', () => fetchHistogramData('humidity', 'humidity-histogram', 'humidity-start-date', 'humidity-end-date'));
 
 // Call the function when the page loads
 window.onload = fetchDevices;

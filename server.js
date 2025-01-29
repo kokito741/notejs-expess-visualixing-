@@ -61,26 +61,24 @@ app.get('/histogram', (req, res) => {
   if (!req.session.userId) {
     return res.status(401).send('Unauthorized');
   }
-  const { type, range } = req.query;
+  const { type, start, end } = req.query;
   const column = type === 'temp' ? 'temp' : 'humanity';
   const query = `
-    SELECT ${column} AS value, COUNT(*) AS frequency
+    SELECT DATE_FORMAT(data_taken, '%Y-%m-%d %H:00:00') AS hour, AVG(${column}) AS value, COUNT(*) AS frequency
     FROM \`device-sensors\`
     WHERE device_id IN (
       SELECT device_id
       FROM \`devise-list\`
       WHERE user_id = ?
     )
-    AND ${column} BETWEEN ? AND ?
-    GROUP BY ${column}
-    ORDER BY ${column}
+    AND data_taken BETWEEN ? AND ?
+    GROUP BY hour
+    ORDER BY hour
   `;
-  const min = range - 10;
-  const max = range + 10;
-  connection.query(query, [req.session.userId, min, max], (err, results) => {
+  connection.query(query, [req.session.userId, start, end], (err, results) => {
     if (err) throw err;
-    const labels = results.map(row => row.value);
-    const values = results.map(row => row.frequency);
+    const labels = results.map(row => row.hour);
+    const values = results.map(row => row.value);
     res.json({ labels, values });
   });
 });
